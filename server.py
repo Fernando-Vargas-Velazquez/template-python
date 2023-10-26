@@ -3,7 +3,7 @@ from flask import Flask, send_from_directory, render_template, redirect
 
 app = Flask(__name__)
 
-port = int(os.environ.get("PORT", 5000))
+port = int(os.environ.get("PORT", 8080))
 
 @app.route('/static/<path:path>')
 def serve_static(path):
