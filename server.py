@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-DATABASE_URL = "postgresql://usuario:contraseña@localhost/nombre_de_la_base_de_datos"
+DATABASE_URL = "postgres://fl0user:nxqSEswz8Z2h@ep-patient-mode-62136438.us-east-2.aws.neon.fl0.io:5432/database?sslmode=require"
 conn = None
 
 app = FastAPI()
