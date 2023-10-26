@@ -3,6 +3,7 @@ import asyncpg
 from pydantic import BaseModel
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
+from flask import Flask, render_template, send_from_directory, redirect
 
 DATABASE_URL = "postgres://fl0user:nxqSEswz8Z2h@ep-patient-mode-62136438.us-east-2.aws.neon.fl0.io:5432/database?sslmode=require"
 conn = None
@@ -18,6 +19,7 @@ class Contacto(BaseModel):
 async def startup_db_connection():
     global conn
     conn = await asyncpg.connect(DATABASE_URL)
+    await create_table()
 
 @app.on_event("shutdown")
 async def shutdown_db_connection():
@@ -50,19 +52,30 @@ async def eliminar_contacto(email: str):
     await conn.execute('DELETE FROM contactos WHERE email = $1', email)
     return {"message": "Contacto eliminado"}
 
-# Rutas para la aplicación Flask
+flask_app = Flask(__name__)
 
-@app.route('/static/<path:path>')
-def serve_static(path):
-    return send_from_directory('static', path)
-
-@app.route('/')
+@flask_app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/<path:path>')
+@flask_app.route('/static/<path:path>')
+def serve_static(path):
+    return send_from_directory('static', path)
+
+@flask_app.route('/<path:path>')
 def all_routes(path):
     return redirect('/')
+
+async def create_table():
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS contactos (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255),
+            nombre VARCHAR(255),
+            telefono VARCHAR(20)
+        )
+    '''
+    await conn.execute(create_table_query)
 
 if __name__ == "__main__":
     import uvicorn
